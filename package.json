@@ -1,0 +1,40 @@
+{
+  "name": "shelfwise",
+  "version": "1.0.0",
+  "description": "ShelfWise - A professional book review platform with user authentication and comprehensive book cataloging. Built as a graduation project demonstrating full-stack development with Express.js, JWT authentication, and modern API best practices.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node src/tests/integration.js",
+    "test:grading": "node src/tests/grading-tests.js",
+    "health-check": "curl http://localhost:5000/health"
+  },
+  "keywords": [
+    "express",
+    "jwt",
+    "books",
+    "reviews",
+    "api",
+    "authentication",
+    "graduation-project"
+  ],
+  "author": "ShelfWise Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "express-session": "^1.17.3",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.0"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}
