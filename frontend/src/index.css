@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@layer base {
+    :root {
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%;
+        --card: 240 10% 3.9%;
+        --card-foreground: 0 0% 98%;
+        --popover: 240 10% 3.9%;
+        --popover-foreground: 0 0% 98%;
+        --primary: 0 0% 98%;
+        --primary-foreground: 240 5.9% 10%;
+        --secondary: 240 3.7% 15.9%;
+        --secondary-foreground: 0 0% 98%;
+        --muted: 240 3.7% 15.9%;
+        --muted-foreground: 240 5% 64.9%;
+        --accent: 240 3.7% 15.9%;
+        --accent-foreground: 0 0% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 240 3.7% 15.9%;
+        --input: 240 3.7% 15.9%;
+        --ring: 240 4.9% 83.9%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-white/10;
+    }
+
+    body {
+        @apply bg-[#09090b] text-slate-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200;
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Playfair Display', serif;
+    }
+}
+
+@layer components {
+    .premium-card {
+        @apply relative overflow-hidden rounded-3xl bg-[#18181b] border border-white/5 shadow-2xl transition-all duration-500 hover:border-white/10 hover:shadow-indigo-500/10;
+    }
+
+    .glass-button {
+        @apply relative inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest transition-all duration-300 overflow-hidden active:scale-95;
+    }
+
+    .btn-primary {
+        @apply bg-white text-black hover:bg-slate-200 shadow-[0_0_20px_rgba(255, 255, 255, 0.15)] active:shadow-none;
+    }
+
+    .input-premium {
+        @apply bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all placeholder:text-slate-500;
+    }
+}
+
+/* Custom Animations */
+@keyframes textShimmer {
+    from {
+        background-position: 0% center;
+    }
+
+    to {
+        background-position: -200% center;
+    }
+}
+
+.animate-shimmer {
+    background: linear-gradient(90deg, #fff, #6366f1, #fff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textShimmer 4s linear infinite;
+}
+
+.stagger-item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
