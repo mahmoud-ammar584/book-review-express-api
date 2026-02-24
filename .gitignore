@@ -12,3 +12,6 @@ build/
 *~
 .nyc_output/
 coverage/
+
+# Ignore nested repositories
+book-review-api/
