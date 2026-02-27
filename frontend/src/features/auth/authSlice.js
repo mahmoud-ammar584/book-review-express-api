@@ -13,16 +13,28 @@ export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async ({ username, password }, { rejectWithValue }) => {
         try {
+            // Clear any old stale tokens first
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+
             const response = await api.post('/customer/login', { username, password });
-            if (response.data.accessToken) {
-                localStorage.setItem('token', response.data.accessToken);
-                localStorage.setItem('username', response.data.username || username);
+
+            // Explicitly check that we got a valid token back
+            if (!response.data.accessToken) {
+                return rejectWithValue(response.data.message || 'Login failed - no token received');
             }
+
+            localStorage.setItem('token', response.data.accessToken);
+            localStorage.setItem('username', response.data.username || username);
+
             return {
                 username: response.data.username || username,
                 token: response.data.accessToken
             };
         } catch (err) {
+            // Clear tokens on failed login too
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
             return rejectWithValue(err.response?.data?.message || 'Login failed');
         }
     }

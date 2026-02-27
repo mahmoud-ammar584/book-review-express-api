@@ -96,7 +96,7 @@ const enrichBooks = async () => {
     }
 };
 
-enrichBooks();
+// enrichBooks(); // Disabled temporarily to avoid 429 status code errors
 
 const doesExist = (username) => {
     return users.some(user => user.username === username);
@@ -127,7 +127,7 @@ public_users.post("/login", (req, res) => {
 
     if (authenticatedUser(username, password)) {
         let accessToken = jwt.sign({
-            data: password
+            data: username
         }, 'access', { expiresIn: 60 * 60 });
 
         req.session.authorization = {
@@ -139,7 +139,7 @@ public_users.post("/login", (req, res) => {
             username
         });
     } else {
-        return res.status(208).json({ message: "Invalid Login. Check username and password" });
+        return res.status(401).json({ message: "Invalid Login. Check username and password" });
     }
 });
 

@@ -38,7 +38,12 @@ export const addReview = createAsyncThunk(
     'books/addReview',
     async ({ isbn, review }, { rejectWithValue }) => {
         try {
-            const response = await api.put(`/customer/auth/review/${isbn}`, { review });
+            const token = localStorage.getItem('token');
+            const response = await api.put(`/customer/auth/review/${isbn}`, { review }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             return response.data;
         } catch (err) {
             return rejectWithValue(err.response?.data?.message || 'Failed to add review');
@@ -50,7 +55,12 @@ export const deleteReview = createAsyncThunk(
     'books/deleteReview',
     async (isbn, { rejectWithValue }) => {
         try {
-            const response = await api.delete(`/customer/auth/review/${isbn}`);
+            const token = localStorage.getItem('token');
+            const response = await api.delete(`/customer/auth/review/${isbn}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             return response.data;
         } catch (err) {
             return rejectWithValue(err.response?.data?.message || 'Failed to delete review');
@@ -77,7 +87,7 @@ const booksSlice = createSlice({
             })
             .addCase(fetchBookDetails.pending, (state) => {
                 state.loading = true;
-                state.currentBook = null;
+                // Don't wipe currentBook to avoid flicker
                 state.error = null;
             })
             .addCase(fetchBookDetails.fulfilled, (state, action) => {
@@ -87,6 +97,18 @@ const booksSlice = createSlice({
             .addCase(fetchBookDetails.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(addReview.fulfilled, (state, action) => {
+                state.loading = false;
+                if (action.payload.updatedBook) {
+                    state.currentBook = action.payload.updatedBook;
+                }
+            })
+            .addCase(deleteReview.fulfilled, (state, action) => {
+                state.loading = false;
+                if (action.payload.updatedBook) {
+                    state.currentBook = action.payload.updatedBook;
+                }
             });
     },
 });

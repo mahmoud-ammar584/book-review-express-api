@@ -16,10 +16,18 @@ const BookDetailsPage = () => {
 
     const handleReview = async (e) => {
         e.preventDefault();
-        if (reviewText.trim()) {
-            await dispatch(addReview({ isbn, review: reviewText }));
+        if (!reviewText.trim()) return;
+
+        try {
+            console.log(`[REVIEW-UI] Attempting to post review for ISBN ${isbn}`);
+            const result = await dispatch(addReview({ isbn, review: reviewText })).unwrap();
+            console.log("[REVIEW-UI] Success result:", result);
             setReviewText('');
             dispatch(fetchBookDetails(isbn));
+            alert("Review saved successfully!");
+        } catch (err) {
+            console.error("[REVIEW-UI] Post Review Failed:", err);
+            alert(`Failed to save review: ${err}`);
         }
     };
 
@@ -45,8 +53,10 @@ const BookDetailsPage = () => {
         </div>
     );
 
-    const reviews = currentBook.reviews ? (Array.isArray(currentBook.reviews) ? currentBook.reviews : Object.values(currentBook.reviews)) : [];
-    const hasReviewed = reviews.some(r => r.reviewer === user || r.username === user);
+    const reviewsEntries = Object.entries(currentBook.reviews || {});
+    const hasReviewed = reviewsEntries.some(([reviewer]) => reviewer === user);
+
+    console.log("[DEBUG] BookDetails State:", { isbn, user, isAuthenticated, currentBook });
 
     return (
         <div className="pt-32 pb-24 px-6 lg:px-12 max-w-7xl mx-auto animate-fade-in">
@@ -83,11 +93,12 @@ const BookDetailsPage = () => {
                     </div>
 
                     {/* Review Section */}
-                    <div className="space-y-8 pt-12 border-t border-white/5">
+                    <div className="space-y-8 pt-12 border-t border-white/5" id="reviews-section">
                         <h3 className="text-xs font-black text-white uppercase tracking-widest">The Critique</h3>
 
                         {isAuthenticated ? (
                             <form onSubmit={handleReview} className="space-y-4">
+                                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Logged in as: {user}</span>
                                 <textarea
                                     value={reviewText}
                                     onChange={(e) => setReviewText(e.target.value)}
@@ -101,28 +112,33 @@ const BookDetailsPage = () => {
                         ) : (
                             <div className="bg-[#18181b] p-12 rounded-3xl border border-white/5 text-center">
                                 <p className="text-slate-400 font-bold mb-6 italic uppercase tracking-tighter">You must be part of our circle to contribute.</p>
-                                <Link to="/login" className="text-sm font-black text-indigo-400 uppercase tracking-widest hover:text-indigo-300">Sign in to Review</Link>
+                                <div className="flex flex-col gap-4 items-center">
+                                    <Link to="/login" className="btn-primary py-3 px-12">Sign in to Review</Link>
+                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Auth Required for Tasks 8 & 9</span>
+                                </div>
                             </div>
                         )}
 
                         <div className="space-y-6">
-                            {Object.entries(currentBook.reviews || {}).length > 0 ? (
-                                Object.entries(currentBook.reviews).map(([reviewer, text], i) => (
+                            {reviewsEntries.length > 0 ? (
+                                reviewsEntries.map(([reviewer, text], i) => (
                                     <div key={i} className="bg-white/5 p-8 rounded-2xl border border-white/5">
                                         <div className="flex justify-between items-start mb-4">
                                             <div className="flex flex-col">
                                                 <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">Contributor</span>
                                                 <span className="font-bold text-white uppercase tracking-tighter italic">{reviewer}</span>
                                             </div>
-                                            {reviewer === user && (
-                                                <button onClick={handleDelete} className="text-xs font-black text-red-500/60 hover:text-red-500 uppercase tracking-widest transition-colors">Delete</button>
+                                            {(reviewer === user) && (
+                                                <button onClick={handleDelete} className="text-xs font-black text-red-500/60 hover:text-red-500 uppercase tracking-widest transition-colors">Delete My Review</button>
                                             )}
                                         </div>
                                         <p className="text-slate-400 leading-relaxed font-medium italic">"{text}"</p>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-slate-600 font-bold italic text-center py-12 uppercase tracking-tighter lg:text-3xl opacity-20">Silence. Be the first to break the ice.</p>
+                                <div className="py-20 text-center">
+                                    <p className="text-slate-600 font-bold italic uppercase tracking-tighter text-3xl opacity-20">Silence. Be the first to break the ice.</p>
+                                </div>
                             )}
                         </div>
                     </div>
